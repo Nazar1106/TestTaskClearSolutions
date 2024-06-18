@@ -1,12 +1,21 @@
 package com.example.java_practical_test_assignment.service;
 
+import com.example.java_practical_test_assignment.dto.CreateUserDTO;
+import com.example.java_practical_test_assignment.exception.ApiRequestException;
+import com.example.java_practical_test_assignment.exception.BusinessException;
 import com.example.java_practical_test_assignment.model.User;
-import java.util.List;
+import com.example.java_practical_test_assignment.model.UserKey;
+
+import java.util.*;
 
 public interface UserService {
-    User createUser(User user);
-    User updateSomeUserFields(String email, User updatedUser);
-    User updateAllUserFields(String email, User updateFields);
-    boolean deleteUser(User user);
-    List<User> searchUserByBirthDate(String fromDate, String toDate);
+    CreateUserDTO createUser(CreateUserDTO userDataDTO, UserKey id) throws ApiRequestException;
+
+    void updateUser(UUID id, User user);
+
+    void deleteUser(UUID id) throws ApiRequestException, BusinessException;
+
+
+    List<User> searchUserByBirthDate(String fromDate, String toDate) throws ApiRequestException, BusinessException;
+
 }

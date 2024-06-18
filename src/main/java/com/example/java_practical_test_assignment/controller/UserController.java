@@ -1,71 +1,64 @@
 package com.example.java_practical_test_assignment.controller;
 
+import com.example.java_practical_test_assignment.dto.CreateUserDTO;
+import com.example.java_practical_test_assignment.dto.RequestUserAllUpdateDTO;
+import com.example.java_practical_test_assignment.dto.RequestUserPartialUpdateDTO;
 import com.example.java_practical_test_assignment.exception.ApiRequestException;
+import com.example.java_practical_test_assignment.exception.BusinessException;
 import com.example.java_practical_test_assignment.model.User;
-import com.example.java_practical_test_assignment.service.UserService;
+import com.example.java_practical_test_assignment.model.UserKey;
+import com.example.java_practical_test_assignment.service.UserServiceImpl.UserServiceImpl;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/users")
-@AllArgsConstructor
+@RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
-    @PutMapping("/update/{email}")
-    public ResponseEntity<User> updateUser(@PathVariable String email, @Valid @RequestBody User user) {
-        try {
-            var updateUser = userService.updateAllUserFields(email, user);
-            return ResponseEntity.ok(updateUser);
-        } catch (Exception e) {
-            throw new ApiRequestException(e.getMessage());
-        }
+    @Autowired
+    public UserController(UserServiceImpl userService) {
+        this.userService = userService;
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<User> createUsers(@Valid @RequestBody User user) {
-        try {
-            var createUser = userService.createUser(user);
-            return ResponseEntity.ok(createUser);
-        } catch (Exception e) {
-            throw new ApiRequestException(e.getMessage());
-        }
+    @PostMapping
+    public ResponseEntity<CreateUserDTO> createUsers(@Valid @RequestBody CreateUserDTO user, UserKey key) throws ApiRequestException {
+        userService.createUser(user, key);
+
+        URI location = URI.create("/users/" + key); // This is requirement
+
+        return ResponseEntity.created(location).body(user);
     }
 
-    @PatchMapping("/{email}")
-    public ResponseEntity<User> updateSomeFields(@PathVariable String email, @Valid @RequestBody User updatedUser) {
-        try {
-            var update = userService.updateSomeUserFields(email, updatedUser);
-            return ResponseEntity.ok(update);
-        } catch (Exception e) {
-            throw new ApiRequestException(e.getMessage());
-        }
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping(path = "/{id}")
+    public RequestUserAllUpdateDTO updateAllUserFields(@PathVariable UUID id, @Valid @RequestBody
+    RequestUserAllUpdateDTO requestUserAllUpdateDTO) throws BusinessException, ApiRequestException {
+        return userService.updateWholeUser(id, requestUserAllUpdateDTO);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUserByBirthDate(
-            @RequestParam("fromDate") String fromDate,
-            @RequestParam("toDate") String toDate) throws ApiRequestException {
-        try {
-            var userSearch = userService.searchUserByBirthDate(fromDate, toDate);
-            return ResponseEntity.ok(userSearch);
-        } catch (Exception e) {
-            throw new ApiRequestException(e.getMessage());
-        }
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/{id}")
+    public RequestUserPartialUpdateDTO partialUpdate(@PathVariable UUID id, @Valid @RequestBody RequestUserPartialUpdateDTO user) throws BusinessException, ApiRequestException {
+        return userService.updatePartialUser(id, user);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleteUser(@RequestBody User user) {
-        try {
-            var isUserDeleted = userService.deleteUser(user);
-            return ResponseEntity.ok(isUserDeleted);
-        } catch (Exception e) {
-            throw new ApiRequestException("Can't find user by this email.");
-        }
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public List<User> searchUserByBirthDate(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) throws ApiRequestException, BusinessException {
+        return userService.searchUserByBirthDate(fromDate, toDate);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable("id") UUID id) throws ApiRequestException {
+        userService.deleteUser(id);
     }
 }
