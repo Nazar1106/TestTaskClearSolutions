@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @JsonRootName("data")
-public class RequestUserPartialUpdateDTO {
+public class UserPartialUpdateDTO {
 
     @Email(message = "Email should be valid")
     private String email;
@@ -21,7 +21,6 @@ public class RequestUserPartialUpdateDTO {
 
     private String lastName;
 
- //   @JsonFormat(pattern = "yyyy-MM-dd")
     @Past(message = "Birth date should be in the past")
     private LocalDate birthDate;
 

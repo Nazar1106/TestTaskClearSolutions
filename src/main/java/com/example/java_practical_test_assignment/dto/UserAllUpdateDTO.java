@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 @JsonRootName("data")
-public class RequestUserAllUpdateDTO {
+public class UserAllUpdateDTO {
 
     @NotNull(message = "Email name must be updated")
     @NotBlank(message = "Email is required")
@@ -29,7 +29,6 @@ public class RequestUserAllUpdateDTO {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
- //   @JsonFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Birth date must be updated")
     @Past(message = "Birth date should be in the past")
     private LocalDate birthDate;

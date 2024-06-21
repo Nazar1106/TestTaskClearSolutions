@@ -11,11 +11,11 @@ import java.util.*;
 public interface UserService {
     CreateUserDTO createUser(CreateUserDTO userDataDTO, UserKey id) throws ApiRequestException;
 
-    void updateUser(UUID id, User user);
+    User updateUser(UUID id, User user);
 
     void deleteUser(UUID id) throws ApiRequestException, BusinessException;
-
 
     List<User> searchUserByBirthDate(String fromDate, String toDate) throws ApiRequestException, BusinessException;
 
 }
+

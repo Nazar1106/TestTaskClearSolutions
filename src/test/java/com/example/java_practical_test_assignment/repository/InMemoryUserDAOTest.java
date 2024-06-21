@@ -22,19 +22,14 @@ class InMemoryUserDAOTest {
     public void testPutUser() {
 
         UUID id = UUID.randomUUID();
-
         User expectedUser = new User("Nazar", "Petro", "test@example.com", LocalDate.of(2000, 6, 1), "shevchenka", "12345678");
 
-        assertNotNull(expectedUser);
-
         User result = userDAO.putUser(id, expectedUser);
-
-        assertNotNull(result);
-
         User retrievedUser = userDAO.getUserToId(id);
 
+        assertNotNull(expectedUser);
+        assertNotNull(result);
         assertNotNull(retrievedUser);
-
         assertEquals(expectedUser, retrievedUser);
     }
 
@@ -64,7 +59,6 @@ class InMemoryUserDAOTest {
         User result = userDAO.replaceUser(id, newUser);
 
         assertSame(user, result);
-
         assertEquals("IVAN", userDAO.getUserToId(id).getFirstName());
         assertEquals("KALYG", userDAO.getUserToId(id).getLastName());
         assertEquals("TEST@example.com", userDAO.getUserToId(id).getEmail());

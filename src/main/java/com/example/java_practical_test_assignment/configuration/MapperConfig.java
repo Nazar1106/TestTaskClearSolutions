@@ -2,6 +2,7 @@ package com.example.java_practical_test_assignment.configuration;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,7 +14,7 @@ public class MapperConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-     // objectMapper.setConfig(objectMapper.getSerializationConfig().withRootName("data"));
+        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);

@@ -1,8 +1,8 @@
 package com.example.java_practical_test_assignment.service.UserServiceImpl;
 
 import com.example.java_practical_test_assignment.dto.CreateUserDTO;
-import com.example.java_practical_test_assignment.dto.RequestUserAllUpdateDTO;
-import com.example.java_practical_test_assignment.dto.RequestUserPartialUpdateDTO;
+import com.example.java_practical_test_assignment.dto.UserAllUpdateDTO;
+import com.example.java_practical_test_assignment.dto.UserPartialUpdateDTO;
 import com.example.java_practical_test_assignment.exception.ApiRequestException;
 import com.example.java_practical_test_assignment.exception.BusinessException;
 import com.example.java_practical_test_assignment.mapper.UserMapper;
@@ -15,10 +15,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -34,10 +37,6 @@ class UserServiceImplTest {
 
     @InjectMocks
     private UserServiceImpl userService;
-
-
-    private User user;
-
 
     @Test
     void testCreateUser_Success() throws ApiRequestException {
@@ -74,7 +73,7 @@ class UserServiceImplTest {
 
         UUID uuid = UUID.randomUUID();
 
-        user = User.builder()
+        User user = User.builder()
                 .birthDate(LocalDate.of(2000, 6, 1))
                 .email("test@example.com")
                 .firstName("John")
@@ -83,7 +82,7 @@ class UserServiceImplTest {
                 .phoneNumber("12345678")
                 .build();
 
-        RequestUserAllUpdateDTO userDTO = RequestUserAllUpdateDTO.builder()
+        UserAllUpdateDTO userDTO = UserAllUpdateDTO.builder()
                 .birthDate(LocalDate.of(2000, 6, 1))
                 .email("test@example.com")
                 .firstName("John")
@@ -105,7 +104,7 @@ class UserServiceImplTest {
         when(userRepository.getUserToId(uuid)).thenReturn(existingUser);
         when(userRepository.replaceUser(any(UUID.class), any(User.class))).thenReturn(user);
 
-        RequestUserAllUpdateDTO savedUserDTO = userService.updateWholeUser(uuid, userDTO);
+        UserAllUpdateDTO savedUserDTO = userService.updateWholeUser(uuid, userDTO);
 
         Assertions.assertThat(savedUserDTO).isNotNull();
         Assertions.assertThat(savedUserDTO.getEmail()).isNotEqualTo(existingUser.getEmail());
@@ -131,7 +130,7 @@ class UserServiceImplTest {
                 .phoneNumber("12345678")
                 .build();
 
-        RequestUserAllUpdateDTO userDTO = RequestUserAllUpdateDTO.builder()
+        UserAllUpdateDTO userDTO = UserAllUpdateDTO.builder()
                 .birthDate(LocalDate.of(2000, 6, 1))
                 .email("test@example.com")
                 .firstName("Nazar")
@@ -153,7 +152,7 @@ class UserServiceImplTest {
         when(userRepository.getUserToId(uuid)).thenReturn(existingUser);
         when(userRepository.replaceUser(any(UUID.class), any(User.class))).thenReturn(user);
 
-        RequestUserAllUpdateDTO savedUserDTO = userService.updateWholeUser(uuid, userDTO);
+        UserAllUpdateDTO savedUserDTO = userService.updateWholeUser(uuid, userDTO);
 
         Assertions.assertThat(savedUserDTO).isNotNull();
         Assertions.assertThat(savedUserDTO.getEmail()).isEqualTo("test@example.com");
@@ -177,14 +176,14 @@ class UserServiceImplTest {
                 .phoneNumber("98765432")
                 .build();
 
-        RequestUserPartialUpdateDTO partialUpdateDTO = RequestUserPartialUpdateDTO.builder()
+        UserPartialUpdateDTO partialUpdateDTO = UserPartialUpdateDTO.builder()
                 .email("new@example.com")
                 .build();
 
         when(userRepository.getUserToId(uuid)).thenReturn(existingUser);
         when(userMapper.userToPartialUser(existingUser)).thenReturn(partialUpdateDTO);
 
-        RequestUserPartialUpdateDTO result = userService.updatePartialUser(uuid, partialUpdateDTO);
+        UserPartialUpdateDTO result = userService.updatePartialUser(uuid, partialUpdateDTO);
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getEmail()).isEqualTo(partialUpdateDTO.getEmail());
@@ -197,7 +196,7 @@ class UserServiceImplTest {
     @Test
     void updatePartialUser_userNotFound() {
         UUID uuid = UUID.randomUUID();
-        RequestUserPartialUpdateDTO partialUpdateDTO = RequestUserPartialUpdateDTO.builder()
+        UserPartialUpdateDTO partialUpdateDTO = UserPartialUpdateDTO.builder()
                 .email("new@example.com")
                 .build();
 
@@ -213,12 +212,60 @@ class UserServiceImplTest {
     }
 
     @Test
+    public void searchUserByBirthdayDate() {
+
+        Map<UUID, User> userMap = new HashMap<>();
+
+        User user = User.builder()
+                .birthDate(LocalDate.of(2000, 1, 1))
+                .email("existing@example.com")
+                .firstName("Existing")
+                .lastName("User")
+                .address("existing address")
+                .phoneNumber("98765432")
+                .build();
+        UUID userId = UUID.randomUUID();
+        userMap.put(userId, user);
+
+        User user2 = User.builder()
+                .birthDate(LocalDate.of(2000, 1, 1))
+                .email("existing@example.com")
+                .firstName("Existing")
+                .lastName("User")
+                .address("existing address")
+                .phoneNumber("98765432")
+                .build();
+        UUID userId2 = UUID.randomUUID();
+        userMap.put(userId2, user2);
+
+        User user3 = User.builder()
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .email("existing@example.com")
+                .firstName("Existing")
+                .lastName("User")
+                .address("existing address")
+                .phoneNumber("98765432")
+                .build();
+        UUID userId3 = UUID.randomUUID();
+        userMap.put(userId3, user3);
+
+        when(userRepository.values()).thenReturn(userMap.values());
+
+        List<User> result = userService.searchUserByBirthDate("2000-01-01", "2005-12-31");
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(user));
+        assertTrue(result.contains(user2));
+    }
+
+
+    @Test
     public void deleteUser_existingUser() throws ApiRequestException {
-        // Arrange
+
         Map<UUID, User> userMap = new HashMap<>();
         UUID userId = UUID.randomUUID();
 
-        user = User.builder()
+        User user = User.builder()
                 .birthDate(LocalDate.of(2000, 6, 1))
                 .email("test@example.com")
                 .firstName("Nazar")
@@ -242,6 +289,7 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).delete(userId);
         assertFalse(userMap.containsKey(userId));
     }
+
 
     @Test
     public void deleteUser_nonExistingUser() {

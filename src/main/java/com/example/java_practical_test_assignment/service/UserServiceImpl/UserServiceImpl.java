@@ -1,8 +1,8 @@
 package com.example.java_practical_test_assignment.service.UserServiceImpl;
 
 import com.example.java_practical_test_assignment.dto.CreateUserDTO;
-import com.example.java_practical_test_assignment.dto.RequestUserAllUpdateDTO;
-import com.example.java_practical_test_assignment.dto.RequestUserPartialUpdateDTO;
+import com.example.java_practical_test_assignment.dto.UserAllUpdateDTO;
+import com.example.java_practical_test_assignment.dto.UserPartialUpdateDTO;
 import com.example.java_practical_test_assignment.exception.ApiRequestException;
 import com.example.java_practical_test_assignment.exception.BusinessException;
 import com.example.java_practical_test_assignment.mapper.UserMapper;
@@ -31,16 +31,11 @@ public class UserServiceImpl implements UserService {
     @Value("${user.minAge}")
     int minimumAge;
 
-    //todo: I need troubleshoot problem with Users KEYS +
-    //:todo - Try to change rootName of (List and Map);
-    //:todo - Try to change error message for fields where are annotation + ?;
-    //:todo - HOW CAN I GET ID SPECIFIC USER IF THERE ARE A LOT OF THEM IN THE STORAGE???
-
     @Override
     public CreateUserDTO createUser(CreateUserDTO userDTO, UserKey userKey) throws ApiRequestException {
 
         User user = new User();
-        BeanUtils.copyProperties(userDTO, user); //:todo try if I can use DTO in order to set fields DTOUSER to user
+        BeanUtils.copyProperties(userDTO, user);
 
         int age = getAge(user);
         if (age > minimumAge) {
@@ -53,13 +48,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(UUID id, User user) {
+    public User updateUser(UUID id, User user) {
 
-        repository.replaceUser(id, user);
+        return repository.replaceUser(id, user);
     }
 
-    //todo: Done!
-    public RequestUserAllUpdateDTO updateWholeUser(UUID id, RequestUserAllUpdateDTO userDto) throws ApiRequestException, BusinessException {
+    public UserAllUpdateDTO updateWholeUser(UUID id, UserAllUpdateDTO userDto) throws ApiRequestException, BusinessException {
 
         User user = new User();
         BeanUtils.copyProperties(userDto, user);
@@ -80,12 +74,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
-    //todo: This method bad updates partial fields - because if I don't update some fields
-    // these fields became like null in data storage!!! +
-    // todo: this method delete fields which I don't update +
-    // todo: check how this method in general works!!!
-    public RequestUserPartialUpdateDTO updatePartialUser(UUID id, RequestUserPartialUpdateDTO user) throws BusinessException, ApiRequestException {
+    public UserPartialUpdateDTO updatePartialUser(UUID id, UserPartialUpdateDTO user) throws BusinessException, ApiRequestException {
 
         User existingUser = repository.getUserToId(id);
 

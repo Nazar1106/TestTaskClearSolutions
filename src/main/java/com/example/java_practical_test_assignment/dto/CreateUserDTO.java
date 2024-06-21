@@ -29,7 +29,6 @@ public class CreateUserDTO {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
-   // @JsonFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Birth date is required")
     @Past(message = "Birth date should be in the past")
     private LocalDate birthDate;
