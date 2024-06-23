@@ -37,6 +37,4 @@ public class CreateUserDTO {
 
     private String phoneNumber;
 
-
-
 }
