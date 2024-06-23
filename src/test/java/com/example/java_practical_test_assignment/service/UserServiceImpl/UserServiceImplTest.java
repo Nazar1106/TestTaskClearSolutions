@@ -305,4 +305,3 @@ class UserServiceImplTest {
         verify(userRepository, never()).delete(any(UUID.class));
     }
 }
-

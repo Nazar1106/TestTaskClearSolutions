@@ -50,7 +50,6 @@ public class UserController {
         return userService.updatePartialUser(id, user);
     }
 
-    //todo: return Data
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public Map<String, Object> searchUserByBirthDate(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) throws ApiRequestException, BusinessException {
@@ -61,7 +60,6 @@ public class UserController {
         response.put("data", users);
 
         return response;
-
     }
 
     @ResponseStatus(HttpStatus.OK)

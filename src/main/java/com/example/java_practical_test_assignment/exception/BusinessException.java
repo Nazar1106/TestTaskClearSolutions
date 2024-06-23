@@ -15,6 +15,4 @@ public class BusinessException extends RuntimeException {
         super(cause);
     }
 
-
-
 }

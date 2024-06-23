@@ -13,7 +13,6 @@ public class UserKey {
 
     private UUID id;
 
-
 }
 
 
