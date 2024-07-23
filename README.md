@@ -29,6 +29,6 @@ Requirements:
 4. Code is covered by unit tests using Spring 
 5. Code has error handling for REST;
 6. API responses are in JSON format;
-7. Use of database is not necessary. The data persistence layer is not required. + I use arraylist.
+7. Use of database is not necessary. The data persistence layer is not required.
 8. Any version of Spring Boot. Java version of your choice.
 9. You can use Spring Initializer utility to create the project: Spring Initializr.
